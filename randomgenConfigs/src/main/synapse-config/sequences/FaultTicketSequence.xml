@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="FaultTicketSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="application/xml"/>
+    <property expression="//*[local-name()='ServiceId']/text()" name="ServiceId" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='FTNumber']/text()" name="FTNumber" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='ServiceType']/text()" name="ServiceType" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='FaultType']/text()" name="FaultType" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='Action']/text()" name="Action" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function getRandomCharacter() {
+    const characters = 'XYZ';
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    return characters[randomIndex];
+	}
+	
+	function getRandomAction() {
+    const strings = ['NEW', 'REIMPLEMENT'];
+    const randomIndex = Math.floor(Math.random() * strings.length);
+    return strings[randomIndex];
+	}
+	
+	function getRandomDate() {
+    const start = new Date(2000, 0, 1).getTime();
+    const end = new Date().getTime();
+    const randomTime = new Date(start + Math.random() * (end - start));
+    return randomTime.toISOString();
+	}
+
+    var timestamp = String(new Date().getTime());
+    var uuid = generateUUID().replace(/-/g, '').substring(0, 8);
+    var shortTimestamp = timestamp.substring(8);
+    var randomAction = getRandomAction();
+    var randomISODate = getRandomDate();
+    
+    mc.setProperty('SERV_ID_Random', 'SV' + timestamp.substring(5) + uuid.substring(0, 4));
+    mc.setProperty('FT_NUM_Random', 'FT' + timestamp.substring(5) + uuid.substring(0,4));
+    mc.setProperty('SERV_TYPE_Random', getRandomCharacter());
+    mc.setProperty('FAULT_TYPE_Random', getRandomCharacter());
+    mc.setProperty('ACTION_Random', randomAction);
+    mc.setProperty('RequestId', 'RQ' + timestamp.substring(5) + uuid.substring(0,4));
+    mc.setProperty('Status', 'Received');
+    mc.setProperty('Remarks', ' ');
+    mc.setProperty('CreatedDate', randomISODate);]]></script>
+    <filter xpath="string-length(get-property('ServiceId'))=0 or get-property('ServiceId')='NULL'">
+        <then>
+            <property expression="get-property('SERV_ID_Random')" name="ServiceId" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('ServiceId')" name="ServiceId" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('FTNumber'))=0 or get-property('FTNumber')='NULL'">
+        <then>
+            <property expression="get-property('FT_NUM_Random')" name="FTNumber" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('FTNumber')" name="FTNumber" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('ServiceType'))=0 or get-property('ServiceType')='NULL'">
+        <then>
+            <property expression="get-property('SERV_TYPE_Random')" name="ServiceType" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('ServiceType')" name="ServiceType" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('FaultType'))=0 or get-property('FaultType')='NULL'">
+        <then>
+            <property expression="get-property('FAULT_TYPE_Random')" name="FaultType" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('FaultType')" name="FaultType" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('Action'))=0 or get-property('Action')='NULL'">
+        <then>
+            <property expression="get-property('ACTION_Random')" name="Action" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('Action')" name="Action" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="xml">
+        <format>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <GetFaultTicketDetails xmlns="http://tempuri.org/">
+                        <GetFaultTicketDetails>
+                            <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                                <NewDataSet xmlns="">
+                                    <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                        <RequestId>$1</RequestId>
+                                        <FTNumber>$2</FTNumber>
+                                        <Status>$3</Status>
+                                        <Remarks>$4</Remarks>
+                                        <CreatedDate>$5</CreatedDate>
+                                    </Table>
+                                </NewDataSet>
+                            </diffgr:diffgram>
+                        </GetFaultTicketDetails>
+                    </GetFaultTicketDetails>
+                </soap:Body>
+            </soap:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('RequestId')"/>
+            <arg evaluator="xml" expression="get-property('FTNumber')"/>
+            <arg evaluator="xml" expression="get-property('Status')"/>
+            <arg evaluator="xml" expression="get-property('Remarks')"/>
+            <arg evaluator="xml" expression="get-property('CreatedDate')"/>
+        </args>
+    </payloadFactory>
+</sequence>

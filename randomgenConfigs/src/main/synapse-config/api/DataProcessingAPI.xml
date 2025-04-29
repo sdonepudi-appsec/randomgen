@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/process" name="DataProcessingAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/customer">
+        <inSequence>
+            <sequence key="ProcessCustomerDataSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/retrieveAccountDetails">
+        <inSequence>
+            <sequence key="GetAccountDetailsSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/retrieveCircuitsInformation">
+        <inSequence>
+            <sequence key="GetCircuitDetailsSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/retrieveCrossConnectInformation">
+        <inSequence>
+            <sequence key="GetCrossConnectSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/retrieveServicesInformation">
+        <inSequence>
+            <sequence key="GetServiceDetailsSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/update-service-attr">
+        <inSequence>
+            <sequence key="UpdateServiceAttrSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/accountInformationAndserviceList">
+        <inSequence>
+            <sequence key="GetAccountAndServicesInfoSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/createWorkOrder">
+        <inSequence>
+            <sequence key="OutageTicketControllerSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+    <resource methods="POST" url-mapping="/fault-ticket">
+        <inSequence>
+            <sequence key="FaultTicketSequence"/>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+        <faultSequence/>
+    </resource>
+</api>

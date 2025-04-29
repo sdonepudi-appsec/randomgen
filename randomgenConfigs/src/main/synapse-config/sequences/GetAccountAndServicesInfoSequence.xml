@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetAccountAndServicesInfoSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="FORCE_POX_HTTP_RESPONSE" scope="axis2" type="STRING" value="false"/>
+    <property name="FORCE_SC_ACCEPTED" scope="axis2" type="STRING" value="false"/>
+    <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="SOAPVersion" scope="axis2" type="STRING" value="soap11"/>
+    <property expression="//*[local-name()='ID']/text()" name="Input_ID" scope="default" type="STRING"/>
+    <!-- 
+    <property expression="//Type" name="Type" scope="default" type="STRING"/>
+    <property expression="//ID" name="ID" scope="default" type="STRING"/>
+    -->
+    <log level="custom">
+        <property expression="//Type" name="Type"/>
+        <property expression="//ID" name="ID"/>
+    </log>
+    <script language="js"><![CDATA[var inputId= mc.getProperty('Input_ID');
+	
+	var modValue = parseInt(inputId) % 7;
+	var regionMapping = {
+        0: 'Active',
+        1: 'Disconnected',
+        2: 'Suspended',
+        3: 'Transferred Out',
+        4: 'Transferred In',
+        5: 'Previous Stage',
+        6: 'Barred'
+     };
+	var servicestatus = regionMapping[modValue];
+	mc.setProperty('Final_SERVICE_CODE',servicestatus);]]></script>
+    <!-- 
+    <filter xpath="//request/TYPE[text()='1']">
+        <then>
+            <log level="custom">
+                <property name="log1" value="logger then type 1"/>
+            </log>
+            <property expression="//request/ID" name="Final_BILLING _ACCOUNT" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <log level="custom">
+                <property name="log2" value="logger else type 1"/>
+            </log>
+            <property name="Final_BILLING _ACCOUNT" scope="default" type="STRING" value="DummyBillingAccount"/>
+        </else>
+    </filter>
+    <filter xpath="//request/TYPE[text()='2']">
+        <then>
+            <log level="custom">
+                <property name="log3" value="logger then type 2"/>
+            </log>
+            <property expression="//request/ID" name="Final_SERVICE_ID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <log level="custom">
+                <property name="log4" value="logger else type 2"/>
+            </log>
+            <property name="Final_SERVICE_ID" scope="default" type="STRING" value="DummyServiceId"/>
+        </else>
+    </filter>
+    <filter xpath="//request/TYPE[text()='3']">
+        <then>
+            <log level="custom">
+                <property name="log5" value="logger then type=3"/>
+            </log>
+            <property expression="//request/ID" name="Final_TELEPHONE_NUMBER" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <log level="custom">
+                <property name="log6" value="logger else type 3"/>
+            </log>
+            <property name="Final_TELEPHONE_NUMBER" scope="default" type="STRING" value="DummyTelephoneNumber"/>
+        </else>
+    </filter>
+    
+     -->
+    <payloadFactory media-type="xml">
+        <format>
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+                <soapenv:Body>
+                    <DataSet xmlns="http://tempuri.org/">
+                        <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                            <NewDataSet xmlns="">
+                                <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                    <CUSTOMER_ID>$1</CUSTOMER_ID>
+                                    <CUSTOMER_TYPE>$2</CUSTOMER_TYPE>
+                                    <CUSTOMER_SUBTYPE>$3</CUSTOMER_SUBTYPE>
+                                    <CUSTOMER_NAME>$4</CUSTOMER_NAME>
+                                    <CUSTOMER_STATUS>$5</CUSTOMER_STATUS>
+                                    <CUSTOMER_ADDRESS>$6</CUSTOMER_ADDRESS>
+                                    <MARKET_SEGMENT>$7</MARKET_SEGMENT>
+                                    <PRIMARY_CONTACT_NAME>$8</PRIMARY_CONTACT_NAME>
+                                    <PRIMARY_CONTACT_PHONE>$9</PRIMARY_CONTACT_PHONE>
+                                    <PRIMARY_CONTACT_EMAIL>$10</PRIMARY_CONTACT_EMAIL>
+                                    <SECONDARY_CONTACT_EMAIL>$11</SECONDARY_CONTACT_EMAIL>
+                                    <SECONDARY_CONTACT_NAME>$12</SECONDARY_CONTACT_NAME>
+                                    <SECONDARY_CONTACT_PHONE>$13</SECONDARY_CONTACT_PHONE>
+                                    <INDUSTRY_TYPE>$14</INDUSTRY_TYPE>
+                                    <INDUSTRY_SUBTYPE>$15</INDUSTRY_SUBTYPE>
+                                    <INDUSTRY_GROUP>$16</INDUSTRY_GROUP>
+                                    <PRIORITY_TAGGING>$17</PRIORITY_TAGGING>
+                                    <RM_ACCOUNT>$18</RM_ACCOUNT>
+                                    <GEOGRAPHY_GEOCODE>$19</GEOGRAPHY_GEOCODE>
+                                    <BILLING_ACCOUNT_NO>$20</BILLING_ACCOUNT_NO>
+                                    <BILLING_ACCOUNT_NAME>$21</BILLING_ACCOUNT_NAME>
+                                    <HOME_SERVICE_DEVICE>$22</HOME_SERVICE_DEVICE>
+                                    <COUNT_OF_MESH_AND_BRAND>$23</COUNT_OF_MESH_AND_BRAND>
+                                    <MODEM_OWNERSHIP>$24</MODEM_OWNERSHIP>
+                                    <SERVICE_ID>$25</SERVICE_ID>
+                                    <PHONE_NUMBER>$26</PHONE_NUMBER>
+                                    <SERVICE_TYPE>$27</SERVICE_TYPE>
+                                    <SERVICE_STATUS>$28</SERVICE_STATUS>
+                                    <SERVICE_ADDRESS>$29</SERVICE_ADDRESS>
+                                    <SERVICE_STATUS_DATE>$30</SERVICE_STATUS_DATE>
+                                    <SPEED_BASE>$31</SPEED_BASE>
+                                    <PACKAGE>$32</PACKAGE>
+                                </Table>
+                            </NewDataSet>
+                        </diffgr:diffgram>
+                    </DataSet>
+                </soapenv:Body>
+            </soapenv:Envelope>
+        </format>
+        <args>
+            <arg value="SJM1851"/>
+            <arg value="REG RESIDENTIAL"/>
+            <arg value="GOVN1"/>
+            <arg value="Juan M Dela Cruz"/>
+            <arg value="ACTIVE"/>
+            <arg value="44 SARILING SIKAP SAN CARLOS HEIGHTS, IRISAN BAGUIO CITY"/>
+            <arg value="RBG"/>
+            <arg value="Jose Rizal"/>
+            <arg value="09991235468"/>
+            <arg value="joserizal@gmail.com"/>
+            <arg value="juliasantos@hotmail.com"/>
+            <arg value="Julia Santos"/>
+            <arg value="0285463113"/>
+            <arg value="SME - Travel and Leisure"/>
+            <arg value="NULL"/>
+            <arg value="GLOBAL ALLIANCE"/>
+            <arg value="Churner"/>
+            <arg value="NULL"/>
+            <arg value="NULL"/>
+            <arg evaluator="xml" expression="get-property('Input_ID')"/>
+            <arg value="Juan M Dela Cruz"/>
+            <arg value="HOME WIFI"/>
+            <arg value="Mesh (1 puck TP-Link Deco M5)"/>
+            <arg value="PLDT-OWNED"/>
+            <arg evaluator="xml" expression="get-property('Input_ID')"/>
+            <arg evaluator="xml" expression="get-property('Input_ID')"/>
+            <arg value="ADSL"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_CODE')"/>
+            <arg value="44 SARILING SIKAP SAN CARLOS HEIGHTS, IRISAN BAGUIO CITY"/>
+            <arg value="1/31/2024"/>
+            <arg value="600 MBPS"/>
+            <arg value="Fiber Unli All Plan 2499 - Data"/>
+        </args>
+    </payloadFactory>
+</sequence>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="DataProcessingAPI" groupId="com.example.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/DataProcessingAPI.xml</file>
+    </artifact>
+    <artifact name="DataProcessingAPI_swagger" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/DataProcessingAPI_swagger.yaml</file>
+    </artifact>
+    <artifact name="DataProcessingAPI_metadata" groupId="com.example.metadata" version="1.0.0" type="synapse/metadata" serverRole="EnterpriseServiceBus">
+        <file>src/main/resources/metadata/DataProcessingAPI_metadata.yaml</file>
+    </artifact>
+    <artifact name="GetAccountDetailsSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetAccountDetailsSequence.xml</file>
+    </artifact>
+    <artifact name="GetCircuitDetailsSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetCircuitDetailsSequence.xml</file>
+    </artifact>
+    <artifact name="GetCrossConnectSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetCrossConnectSequence.xml</file>
+    </artifact>
+    <artifact name="GetServiceDetailsSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetServiceDetailsSequence.xml</file>
+    </artifact>
+    <artifact name="UpdateServiceAttrSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/UpdateServiceAttrSequence.xml</file>
+    </artifact>
+    <artifact name="ProcessCustomerDataSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ProcessCustomerDataSequence.xml</file>
+    </artifact>
+    <artifact name="GetAccountAndServicesInfoSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GetAccountAndServicesInfoSequence.xml</file>
+    </artifact>
+    <artifact name="OutageTicketControllerSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/OutageTicketControllerSequence.xml</file>
+    </artifact>
+    <artifact name="FaultTicketSequence" groupId="com.example.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/FaultTicketSequence.xml</file>
+    </artifact>
+</artifacts>

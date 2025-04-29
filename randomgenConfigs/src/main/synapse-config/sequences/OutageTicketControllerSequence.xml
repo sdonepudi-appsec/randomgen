@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="OutageTicketControllerSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="FORCE_POX_HTTP_RESPONSE" scope="axis2" type="STRING" value="false"/>
+    <property name="FORCE_SC_ACCEPTED" scope="axis2" type="STRING" value="false"/>
+    <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="SOAPVersion" scope="axis2" type="STRING" value="soap11"/>
+    <property expression="//*[local-name()='OutageNumber']/text()" name="Input_OutageNumber" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='FTNumber']/text()" name="Input_FTNumber" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[// Random UUID Generation
+var timestamp = String(new Date().getTime());
+
+var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+}).replace(/-/g, '').substring(0, 8);
+
+var shortTimestamp = timestamp.substring(8);
+mc.setProperty('OutageNumber_Random', '0' + (Math.floor(Math.random() * 900000000 + 100000000)).toString());
+
+
+mc.setProperty('RequestId', '0' + (Math.floor(Math.random() * 900000 + 100000)).toString());
+mc.setProperty('OutageNumber', '123456789');
+mc.setProperty('Status', 'Recieved');
+mc.setProperty('Remarks', 'NA');
+mc.setProperty('CreatedDate', new Date().toISOString().split('T')[0]);
+mc.setProperty('FTNumber', 'default');
+
+var date = new Date().toISOString().split('T')[0];]]></script>
+    <filter xpath="string-length(get-property('Input_OutageNumber'))=0 or get-property('Input_OutageNumber')='NULL'">
+        <then>
+            <property expression="get-property('OutageNumber_Random')" name="Final_OutageNumber" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('Input_OutageNumber')" name="Final_OutageNumber" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="xml">
+        <format>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <OutageTicketControllerResponse xmlns="http://tempuri.org/">
+                        <OutageTicketControllerResult>
+                            <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                                <NewDataSet xmlns="">
+                                    <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                        <RequestId>$1</RequestId>
+                                        <OutageNumber>$2</OutageNumber>
+                                        <Status>$3</Status>
+                                        <Remarks>$4</Remarks>
+                                        <CreatedDate>$5</CreatedDate>
+                                        <FTNumber>$6</FTNumber>
+                                    </Table>
+                                </NewDataSet>
+                            </diffgr:diffgram>
+                        </OutageTicketControllerResult>
+                    </OutageTicketControllerResponse>
+                </soap:Body>
+            </soap:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('RequestId')"/>
+            <arg evaluator="xml" expression="get-property('Final_OutageNumber')"/>
+            <arg evaluator="xml" expression="get-property('Status')"/>
+            <arg evaluator="xml" expression="get-property('Remarks')"/>
+            <arg evaluator="xml" expression="get-property('CreatedDate')"/>
+            <arg evaluator="xml" expression="get-property('Input_FTNumber')"/>
+        </args>
+    </payloadFactory>
+</sequence>

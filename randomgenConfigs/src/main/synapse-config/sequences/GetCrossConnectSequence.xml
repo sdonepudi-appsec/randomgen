@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetCrossConnectSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="FORCE_POX_HTTP_RESPONSE" scope="axis2" type="STRING" value="false"/>
+    <property name="FORCE_SC_ACCEPTED" scope="axis2" type="STRING" value="false"/>
+    <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="SOAPVersion" scope="axis2" type="STRING" value="soap11"/>
+    <property expression="//*[local-name()='CIRT_NAME']/text()" name="Input_CIRT_NAME" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='SERVICE_ID']/text()" name="Input_SERVICE_ID" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[var timestamp = String(new Date().getTime());
+   // var uuid = String(new java.util.UUID.randomUUID()).replace(/-/g, '').substring(0, 8);
+    var shortTimestamp = timestamp.substring(8);
+    
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+	}).replace(/-/g, '').substring(0, 8);
+    
+    
+    mc.setProperty('CIRT_NAME_Random', 'CRT' + timestamp.substring(5) + uuid.substring(0, 4));
+    mc.setProperty('SERVICE_ID_Random', 'SVC' + timestamp.substring(5) + '-' + shortTimestamp);
+    
+    for(var i = 1; i <= 12; i++) {
+        var directions = ['F', 'T'];
+        var sequences = [10, 20, 30, 40];
+        
+        var xconnectTypes = ['DROPINSERT', 'PHYSICAL', 'JUMPER', 'UNNAMED', 'LOGICAL', 'INTERNAL'];
+        var types = ['NGN_SPLITTER', 'DP', 'VMDF', 'HMDF', 'AG'];
+        
+        mc.setProperty('DIR_' + i, directions[Math.abs(parseInt(timestamp + i)) % directions.length]);
+        mc.setProperty('SEQ_' + i, sequences[Math.abs(parseInt(timestamp + i)) % sequences.length]);
+        mc.setProperty('XCONNECT_' + i, xconnectTypes[Math.abs(parseInt(timestamp + i)) % xconnectTypes.length]);
+        mc.setProperty('LOCATION1_' + i, 'LOC_' + shortTimestamp + '_' + i);
+        mc.setProperty('TYPE1_' + i, types[Math.abs(parseInt(timestamp + i)) % types.length]);
+        mc.setProperty('INDEX1_' + i, 'IDX' + shortTimestamp + '_' + i);
+        mc.setProperty('CARD_PORT1_' + i, 'PORT_' + shortTimestamp + '_' + i);
+        mc.setProperty('CIRT_DISPLAYNAME_' + i, 'DISP_' + shortTimestamp + '_' + i);
+    }]]></script>
+    <filter xpath="string-length(get-property('Input_CIRT_NAME'))=0 or get-property('Input_CIRT_NAME')='NULL'">
+        <then>
+            <filter xpath="string-length(get-property('Input_SERVICE_ID'))=0 or get-property('Input_SERVICE_ID')='NULL'">
+                <then>
+                    <property name="Final_CIRT_NAME" scope="default" type="STRING" value="NULL"/>
+                </then>
+                <else>
+                    <property expression="get-property('Input_SERVICE_ID')" name="Final_CIRT_NAME" scope="default" type="STRING"/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <property expression="get-property('Input_CIRT_NAME')" name="Final_CIRT_NAME" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('Input_SERVICE_ID'))=0 or get-property('Input_SERVICE_ID')='NULL'">
+        <then>
+            <property expression="get-property('SERVICE_ID_Random')" name="Final_SERVICE_ID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('Input_SERVICE_ID')" name="Final_SERVICE_ID" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="xml">
+        <format>
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+                <soapenv:Body>
+                    <DataSet xmlns="http://tempuri.org/">
+                        <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                            <NewDataSet xmlns="">
+                                <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                    <CIRT_NAME>$1</CIRT_NAME>
+                                    <SERVICE_ID>$2</SERVICE_ID>
+                                    <DIR>$3</DIR>
+                                    <SEQ>$4</SEQ>
+                                    <XCONNECT>$5</XCONNECT>
+                                    <LOCATION1>$6</LOCATION1>
+                                    <TYPE1>$7</TYPE1>
+                                    <INDEX1>$8</INDEX1>
+                                    <CARD_PORT1>$9</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$10</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table2" msdata:rowOrder="1">
+                                    <CIRT_NAME>$11</CIRT_NAME>
+                                    <SERVICE_ID>$12</SERVICE_ID>
+                                    <DIR>$13</DIR>
+                                    <SEQ>$14</SEQ>
+                                    <XCONNECT>$15</XCONNECT>
+                                    <LOCATION1>$16</LOCATION1>
+                                    <TYPE1>$17</TYPE1>
+                                    <INDEX1>$18</INDEX1>
+                                    <CARD_PORT1>$19</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$20</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table3" msdata:rowOrder="2">
+                                    <CIRT_NAME>$21</CIRT_NAME>
+                                    <SERVICE_ID>$22</SERVICE_ID>
+                                    <DIR>$23</DIR>
+                                    <SEQ>$24</SEQ>
+                                    <XCONNECT>$25</XCONNECT>
+                                    <LOCATION1>$26</LOCATION1>
+                                    <TYPE1>$27</TYPE1>
+                                    <INDEX1>$28</INDEX1>
+                                    <CARD_PORT1>$29</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$30</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table4" msdata:rowOrder="3">
+                                    <CIRT_NAME>$31</CIRT_NAME>
+                                    <SERVICE_ID>$32</SERVICE_ID>
+                                    <DIR>$33</DIR>
+                                    <SEQ>$34</SEQ>
+                                    <XCONNECT>$35</XCONNECT>
+                                    <LOCATION1>$36</LOCATION1>
+                                    <TYPE1>$37</TYPE1>
+                                    <INDEX1>$38</INDEX1>
+                                    <CARD_PORT1>$39</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$40</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table5" msdata:rowOrder="4">
+                                    <CIRT_NAME>$41</CIRT_NAME>
+                                    <SERVICE_ID>$42</SERVICE_ID>
+                                    <DIR>$43</DIR>
+                                    <SEQ>$44</SEQ>
+                                    <XCONNECT>$45</XCONNECT>
+                                    <LOCATION1>$46</LOCATION1>
+                                    <TYPE1>$47</TYPE1>
+                                    <INDEX1>$48</INDEX1>
+                                    <CARD_PORT1>$49</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$50</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table6" msdata:rowOrder="5">
+                                    <CIRT_NAME>$51</CIRT_NAME>
+                                    <SERVICE_ID>$52</SERVICE_ID>
+                                    <DIR>$53</DIR>
+                                    <SEQ>$54</SEQ>
+                                    <XCONNECT>$55</XCONNECT>
+                                    <LOCATION1>$56</LOCATION1>
+                                    <TYPE1>$57</TYPE1>
+                                    <INDEX1>$58</INDEX1>
+                                    <CARD_PORT1>$59</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$60</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table7" msdata:rowOrder="6">
+                                    <CIRT_NAME>$61</CIRT_NAME>
+                                    <SERVICE_ID>$62</SERVICE_ID>
+                                    <DIR>$63</DIR>
+                                    <SEQ>$64</SEQ>
+                                    <XCONNECT>$65</XCONNECT>
+                                    <LOCATION1>$66</LOCATION1>
+                                    <TYPE1>$67</TYPE1>
+                                    <INDEX1>$68</INDEX1>
+                                    <CARD_PORT1>$69</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$70</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table8" msdata:rowOrder="7">
+                                    <CIRT_NAME>$71</CIRT_NAME>
+                                    <SERVICE_ID>$72</SERVICE_ID>
+                                    <DIR>$73</DIR>
+                                    <SEQ>$74</SEQ>
+                                    <XCONNECT>$75</XCONNECT>
+                                    <LOCATION1>$76</LOCATION1>
+                                    <TYPE1>$77</TYPE1>
+                                    <INDEX1>$78</INDEX1>
+                                    <CARD_PORT1>$79</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$80</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table9" msdata:rowOrder="8">
+                                    <CIRT_NAME>$81</CIRT_NAME>
+                                    <SERVICE_ID>$82</SERVICE_ID>
+                                    <DIR>$83</DIR>
+                                    <SEQ>$84</SEQ>
+                                    <XCONNECT>$85</XCONNECT>
+                                    <LOCATION1>$86</LOCATION1>
+                                    <TYPE1>$87</TYPE1>
+                                    <INDEX1>$88</INDEX1>
+                                    <CARD_PORT1>$89</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$90</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table10" msdata:rowOrder="9">
+                                    <CIRT_NAME>$91</CIRT_NAME>
+                                    <SERVICE_ID>$92</SERVICE_ID>
+                                    <DIR>$93</DIR>
+                                    <SEQ>$94</SEQ>
+                                    <XCONNECT>$95</XCONNECT>
+                                    <LOCATION1>$96</LOCATION1>
+                                    <TYPE1>$97</TYPE1>
+                                    <INDEX1>$98</INDEX1>
+                                    <CARD_PORT1>$99</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$100</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table11" msdata:rowOrder="10">
+                                    <CIRT_NAME>$101</CIRT_NAME>
+                                    <SERVICE_ID>$102</SERVICE_ID>
+                                    <DIR>$103</DIR>
+                                    <SEQ>$104</SEQ>
+                                    <XCONNECT>$105</XCONNECT>
+                                    <LOCATION1>$106</LOCATION1>
+                                    <TYPE1>$107</TYPE1>
+                                    <INDEX1>$108</INDEX1>
+                                    <CARD_PORT1>$109</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$110</CIRT_DISPLAYNAME>
+                                </Table>
+                                <Table diffgr:id="Table12" msdata:rowOrder="11">
+                                    <CIRT_NAME>$111</CIRT_NAME>
+                                    <SERVICE_ID>$112</SERVICE_ID>
+                                    <DIR>$113</DIR>
+                                    <SEQ>$114</SEQ>
+                                    <XCONNECT>$115</XCONNECT>
+                                    <LOCATION1>$116</LOCATION1>
+                                    <TYPE1>$117</TYPE1>
+                                    <INDEX1>$118</INDEX1>
+                                    <CARD_PORT1>$119</CARD_PORT1>
+                                    <CIRT_DISPLAYNAME>$120</CIRT_DISPLAYNAME>
+                                </Table>
+                            </NewDataSet>
+                        </diffgr:diffgram>
+                    </DataSet>
+                </soapenv:Body>
+            </soapenv:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_1')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_1')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_1')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_1')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_1')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_1')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_1')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_1')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_2')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_2')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_2')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_2')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_2')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_2')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_2')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_2')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_3')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_3')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_3')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_3')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_3')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_3')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_3')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_3')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_4')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_4')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_4')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_4')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_4')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_4')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_4')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_4')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_5')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_5')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_5')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_5')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_5')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_5')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_5')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_5')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_6')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_6')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_6')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_6')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_6')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_6')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_6')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_6')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_7')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_7')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_7')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_7')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_7')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_7')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_7')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_7')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_8')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_8')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_8')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_8')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_8')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_8')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_8')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_8')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_9')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_9')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_9')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_9')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_9')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_9')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_9')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_9')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_10')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_10')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_10')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_10')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_10')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_10')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_10')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_10')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_11')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_11')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_11')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_11')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_11')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_11')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_11')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_11')"/>
+            <arg evaluator="xml" expression="get-property('Final_CIRT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('DIR_12')"/>
+            <arg evaluator="xml" expression="get-property('SEQ_12')"/>
+            <arg evaluator="xml" expression="get-property('XCONNECT_12')"/>
+            <arg evaluator="xml" expression="get-property('LOCATION1_12')"/>
+            <arg evaluator="xml" expression="get-property('TYPE1_12')"/>
+            <arg evaluator="xml" expression="get-property('INDEX1_12')"/>
+            <arg evaluator="xml" expression="get-property('CARD_PORT1_12')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_DISPLAYNAME_12')"/>
+        </args>
+    </payloadFactory>
+</sequence>

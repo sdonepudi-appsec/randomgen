@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetCircuitDetailsSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="application/xml"/>
+    <property expression="//*[local-name()='P_SERVICEID']/text()" name="P_SERVICEID" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='P_CIRTID']/text()" name="P_CIRTID" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function padWithZeros(number, length) {
+        var str = number.toString();
+        while (str.length < length) {
+            str = '0' + str;
+        }
+        return str;
+    }
+
+    var timestamp = String(new Date().getTime());
+    var uuid = generateUUID().replace(/-/g, '').substring(0, 8);
+    var shortTimestamp = timestamp.substring(8);
+
+    mc.setProperty('CIRT_ID_Random', 'CI' + timestamp.substring(5) + uuid.substring(0, 4));
+    mc.setProperty('SERV_ID_Random', 'SV' + timestamp.substring(5) + uuid.substring(0, 4));
+
+    mc.setProperty('NAP_LOC', 'NAP_LOC_' + shortTimestamp);
+    mc.setProperty('LCP_LOC', 'LCP_LOC_' + shortTimestamp);
+    mc.setProperty('NODE', 'QCYUTAG' + padWithZeros(Math.abs(parseInt(timestamp)) % 999, 3));
+    mc.setProperty('SHELF_SLOT', (Math.abs(parseInt(timestamp)) % 24) + '/' + (Math.abs(parseInt(timestamp)) % 12));
+    mc.setProperty('CABINET', 'CAB_' + shortTimestamp);
+    
+    mc.setProperty('PRIMARY_', 'PRI_' + shortTimestamp);
+    mc.setProperty('PRIMARY_PAIR', 'PP_' + shortTimestamp);
+    mc.setProperty('DP', 'DP_' + shortTimestamp);
+    mc.setProperty('DP_PAIR', 'DP_PAIR_' + shortTimestamp);
+    mc.setProperty('NAP', 'NAP_' + shortTimestamp);
+    mc.setProperty('NAP_PON_PORT', 'NPP_' + shortTimestamp);
+    mc.setProperty('SECONDARY_CABLE', 'SC_' + shortTimestamp);
+    mc.setProperty('SECONDARY_PAIR', 'SP_' + shortTimestamp);
+    
+    mc.setProperty('OLT', 'OLT_' + shortTimestamp);
+    mc.setProperty('OLT_SLOT', 'OS_' + shortTimestamp);
+    mc.setProperty('OLT_PON_PORT', 'OPP_' + shortTimestamp);
+    mc.setProperty('LCP', 'LCP_' + shortTimestamp);
+    mc.setProperty('LCP_PON_PORT', 'LPP_' + shortTimestamp);
+    
+    var circuitStatus = ['INSERVICE', 'PENDING', 'TERMINATED', 'SUSPENDED'];
+    var circuitTypes = ['PHONE', 'LEASED', 'FIBER'];
+    var cabinetTypes = ['CS', 'MS', 'TS'];
+    var speeds = ['128 KBPS', '1 MBPS', '3 MBPS', '5 MBPS'];
+    var neTypes = ['NGN', 'GPON', 'LEGACY'];
+    var cpeTypes = ['ADSL2+ MODEM', 'ONT', 'ROUTER'];
+    
+    mc.setProperty('CABINET_TYPE', cabinetTypes[Math.abs(parseInt(timestamp)) % cabinetTypes.length]);
+    mc.setProperty('CIRT_STATUS', circuitStatus[Math.abs(parseInt(timestamp)) % circuitStatus.length]);
+    mc.setProperty('CIRT_TYPE', circuitTypes[Math.abs(parseInt(timestamp)) % circuitTypes.length]);
+    mc.setProperty('SPEED', speeds[Math.abs(parseInt(timestamp)) % speeds.length]);
+    mc.setProperty('NE_TYPE', neTypes[Math.abs(parseInt(timestamp)) % neTypes.length]);
+    mc.setProperty('CPE_TYPE', cpeTypes[Math.abs(parseInt(timestamp)) % cpeTypes.length]);
+    
+    mc.setProperty('MOTHEREXCHANGECODE', 'SOUTH QUEZON CITY');
+    mc.setProperty('REGN_CODE', 'QCY');
+    mc.setProperty('PLDT_AREA', 'GMM NORTH');
+    mc.setProperty('BARANGAY', 'BGY SOUTH TRIANGLE');
+    mc.setProperty('NODE_LOCATION', 'NODE_LOC_' + shortTimestamp);
+    mc.setProperty('CABINET_LOCATION', 'CAB_LOC_' + shortTimestamp);
+    mc.setProperty('DP_LOC', 'DP_LOC_' + shortTimestamp);
+    
+    mc.setProperty('CPE_SERIAL_NUMBER', 'CSN_' + shortTimestamp);
+    mc.setProperty('ONT', 'ONT_' + shortTimestamp);
+    mc.setProperty('TERMINATION_POINT', 'TP_' + shortTimestamp);
+    mc.setProperty('OPTION_82', mc.getProperty('NODE') + '_' + mc.getProperty('SHELF_SLOT') + '/12');
+    mc.setProperty('CIRT_COMMENT', 'DATA MIGRATION-' + shortTimestamp);
+    mc.setProperty('IPADDRESS', '192.168.' + (Math.abs(parseInt(timestamp)) % 255) + '.' + (Math.abs(parseInt(timestamp)) % 255));
+    mc.setProperty('MDU', 'MDU_' + shortTimestamp);
+    mc.setProperty('DISPLAY_NAME', '028' + shortTimestamp);
+    mc.setProperty('EQUIPMENT_ID', mc.getProperty('NODE'));
+    mc.setProperty('EQUIPMENT_PORT', 'POTS-OUT' + (Math.abs(parseInt(timestamp)) % 24));
+    
+    mc.setProperty('INSERVICEDATE', new Date().toISOString());
+        
+        mc.setProperty('CFS_DETAILS', 'CFS_' + shortTimestamp);]]></script>
+    <filter xpath="string-length(get-property('P_CIRTID'))=0 or get-property('P_CIRTID')='NULL'">
+        <then>
+            <property expression="get-property('CIRT_ID_Random')" name="CIRT_ID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('P_CIRTID')" name="CIRT_ID" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('P_SERVICEID'))=0 or get-property('P_SERVICEID')='NULL'">
+        <then>
+            <property expression="get-property('SERV_ID_Random')" name="SERV_ID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('P_SERVICEID')" name="SERV_ID" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="xml">
+        <format>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <GetCircuitDetailsResponse xmlns="http://tempuri.org/">
+                        <GetCircuitDetailsResult>
+                            <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                                <NewDataSet xmlns="">
+                                    <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                        <CIRT_ID>$1</CIRT_ID>
+                                        <NAP_LOC>$2</NAP_LOC>
+                                        <LCP_LOC>$3</LCP_LOC>
+                                        <NODE>$4</NODE>
+                                        <SHELF_SLOT>$5</SHELF_SLOT>
+                                        <CABINET>$6</CABINET>
+                                        <CABINET_TYPE>$7</CABINET_TYPE>
+                                        <PRIMARY_>$8</PRIMARY_>
+                                        <PRIMARY_PAIR>$9</PRIMARY_PAIR>
+                                        <DP>$10</DP>
+                                        <DP_PAIR>$11</DP_PAIR>
+                                        <NAP>$12</NAP>
+                                        <NAP_PON_PORT>$13</NAP_PON_PORT>
+                                        <CIRT_STATUS>$14</CIRT_STATUS>
+                                        <SECONDARY_CABLE>$15</SECONDARY_CABLE>
+                                        <SECONDARY_PAIR>$16</SECONDARY_PAIR>
+                                        <MOTHEREXCHANGECODE>$17</MOTHEREXCHANGECODE>
+                                        <OLT>$18</OLT>
+                                        <OLT_SLOT>$19</OLT_SLOT>
+                                        <OLT_PON_PORT>$20</OLT_PON_PORT>
+                                        <LCP>$21</LCP>
+                                        <LCP_PON_PORT>$22</LCP_PON_PORT>
+                                        <INSERVICEDATE>$23</INSERVICEDATE>
+                                        <CFS_DETAILS>$24</CFS_DETAILS>
+                                        <CPE_TYPE>$25</CPE_TYPE>
+                                        <CPE_SERIAL_NUMBER>$26</CPE_SERIAL_NUMBER>
+                                        <ONT>$27</ONT>
+                                        <TERMINATION_POINT>$28</TERMINATION_POINT>
+                                        <CIRT_TYPE>$29</CIRT_TYPE>
+                                        <SPEED>$30</SPEED>
+                                        <NE_TYPE>$31</NE_TYPE>
+                                        <REGN_CODE>$32</REGN_CODE>
+                                        <OPTION_82>$33</OPTION_82>
+                                        <CIRT_COMMENT>$34</CIRT_COMMENT>
+                                        <IPADDRESS>$35</IPADDRESS>
+                                        <SERV_ID>$36</SERV_ID>
+                                        <MDU>$37</MDU>
+                                        <PLDT_AREA>$38</PLDT_AREA>
+                                        <BARANGAY>$39</BARANGAY>
+                                        <NODE_LOCATION>$40</NODE_LOCATION>
+                                        <CABINET_LOCATION>$41</CABINET_LOCATION>
+                                        <DP_LOC>$42</DP_LOC>
+                                        <DISPLAY_NAME>$43</DISPLAY_NAME>
+                                        <EQUIPMENT_ID>$44</EQUIPMENT_ID>
+                                        <EQUIPMENT_PORT>$45</EQUIPMENT_PORT>
+                                    </Table>
+                                </NewDataSet>
+                            </diffgr:diffgram>
+                        </GetCircuitDetailsResult>
+                    </GetCircuitDetailsResponse>
+                </soap:Body>
+            </soap:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('CIRT_ID')"/>
+            <arg evaluator="xml" expression="get-property('NAP_LOC')"/>
+            <arg evaluator="xml" expression="get-property('LCP_LOC')"/>
+            <arg evaluator="xml" expression="get-property('NODE')"/>
+            <arg evaluator="xml" expression="get-property('SHELF_SLOT')"/>
+            <arg evaluator="xml" expression="get-property('CABINET')"/>
+            <arg evaluator="xml" expression="get-property('CABINET_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('PRIMARY_')"/>
+            <arg evaluator="xml" expression="get-property('PRIMARY_PAIR')"/>
+            <arg evaluator="xml" expression="get-property('DP')"/>
+            <arg evaluator="xml" expression="get-property('DP_PAIR')"/>
+            <arg evaluator="xml" expression="get-property('NAP')"/>
+            <arg evaluator="xml" expression="get-property('NAP_PON_PORT')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_STATUS')"/>
+            <arg evaluator="xml" expression="get-property('SECONDARY_CABLE')"/>
+            <arg evaluator="xml" expression="get-property('SECONDARY_PAIR')"/>
+            <arg evaluator="xml" expression="get-property('MOTHEREXCHANGECODE')"/>
+            <arg evaluator="xml" expression="get-property('OLT')"/>
+            <arg evaluator="xml" expression="get-property('OLT_SLOT')"/>
+            <arg evaluator="xml" expression="get-property('OLT_PON_PORT')"/>
+            <arg evaluator="xml" expression="get-property('LCP')"/>
+            <arg evaluator="xml" expression="get-property('LCP_PON_PORT')"/>
+            <arg evaluator="xml" expression="get-property('INSERVICEDATE')"/>
+            <arg evaluator="xml" expression="get-property('CFS_DETAILS')"/>
+            <arg evaluator="xml" expression="get-property('CPE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('CPE_SERIAL_NUMBER')"/>
+            <arg evaluator="xml" expression="get-property('ONT')"/>
+            <arg evaluator="xml" expression="get-property('TERMINATION_POINT')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('SPEED')"/>
+            <arg evaluator="xml" expression="get-property('NE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('REGN_CODE')"/>
+            <arg evaluator="xml" expression="get-property('OPTION_82')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_COMMENT')"/>
+            <arg evaluator="xml" expression="get-property('IPADDRESS')"/>
+            <arg evaluator="xml" expression="get-property('SERV_ID')"/>
+            <arg evaluator="xml" expression="get-property('MDU')"/>
+            <arg evaluator="xml" expression="get-property('PLDT_AREA')"/>
+            <arg evaluator="xml" expression="get-property('BARANGAY')"/>
+            <arg evaluator="xml" expression="get-property('NODE_LOCATION')"/>
+            <arg evaluator="xml" expression="get-property('CABINET_LOCATION')"/>
+            <arg evaluator="xml" expression="get-property('DP_LOC')"/>
+            <arg evaluator="xml" expression="get-property('DISPLAY_NAME')"/>
+            <arg evaluator="xml" expression="get-property('EQUIPMENT_ID')"/>
+            <arg evaluator="xml" expression="get-property('EQUIPMENT_PORT')"/>
+        </args>
+    </payloadFactory>
+</sequence>

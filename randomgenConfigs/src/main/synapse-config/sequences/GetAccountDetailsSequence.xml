@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetAccountDetailsSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="application/xml"/>
+    <property expression="//*[local-name()='CustomerId']/text()" name="CustomerId" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='CustomerName']/text()" name="CustomerName" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='ServiceStatus']/text()" name="ServiceStatus" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='ServiceId']/text()" name="ServiceId" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='PhoneId']/text()" name="PhoneId" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='BillingAccountId']/text()" name="BillingAccountId" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[var timestamp = String(new Date().getTime());
+    
+    var inputId= mc.getProperty('BillingAccountId');
+    var modValue = parseInt(inputId) % 5;
+	var regionMapping = {
+        0: 'INSERVICE',
+        1: 'CANCELLED',
+        2: 'DELETED',
+        3: 'PROPOSED',
+        4: 'SUSPENDED'
+     };
+	var servicestatus = regionMapping[modValue];
+	mc.setProperty('Final_SERVICE_CODE',servicestatus);
+    
+    
+    	function generateUUID() {
+		    var d = new Date().getTime();
+		    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = (d + Math.random()*16)%16 | 0;
+		        d = Math.floor(d/16);
+		        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+		    });
+		    return uuid.toUpperCase();
+			}
+        var uuid = generateUUID().replace(/-/g, '').substring(0, 8);
+        var shortTimestamp = timestamp.substring(8);
+        
+        mc.setProperty('CustomerID_Random', 'CU' + timestamp.substring(5) + uuid.substring(0, 4));
+        mc.setProperty('BillingAccountID_Random', 'BA' + timestamp.substring(5) + uuid.substring(0, 4));
+
+        mc.setProperty('ServiceID_DSL_Random', 'SV1' + timestamp.substring(5) + uuid.substring(0, 4));
+        mc.setProperty('PhoneID_Main_Random', 'PH' + timestamp.substring(5) + uuid.substring(0, 4));
+
+        mc.setProperty('CustomerName_Random', 'CUST_' + shortTimestamp + '_' + uuid.substring(0, 4));
+        mc.setProperty('BillingAccountName', 'BILL_' + shortTimestamp + '_' + uuid.substring(0, 4));
+
+        var customerTypes = ['RT1', 'RT2', 'RT3', 'RT4'];
+        var customerSubTypes = ['ST1', 'ST2', 'ST3', 'ST4'];
+        var statusTypes = ['STAT1', 'STAT2', 'STAT3', 'STAT4'];
+        var marketSegments = ['SEG1', 'SEG2', 'SEG3', 'SEG4'];
+
+        mc.setProperty('CustomerType', customerTypes[Math.abs(parseInt(timestamp)) % customerTypes.length] + '_' + shortTimestamp);
+        mc.setProperty('CustomerSubType', customerSubTypes[Math.abs(parseInt(timestamp)) % customerSubTypes.length] + '_' + shortTimestamp);
+        mc.setProperty('CustomerStatus', statusTypes[Math.abs(parseInt(timestamp)) % statusTypes.length] + '_' + shortTimestamp);
+        mc.setProperty('MarketSegment', marketSegments[Math.abs(parseInt(timestamp)) % marketSegments.length] + '_' + shortTimestamp);
+
+        mc.setProperty('CustomerAddress', 'CUAD_' + shortTimestamp + '_' + uuid.substring(0, 4));
+        mc.setProperty('ServiceAddress', 'SEAD_' + shortTimestamp + '_' + uuid.substring(0, 4));
+
+        var serviceTypes = ['SERT1', 'SERT2', 'SERT3', 'SERT4'];
+        var serviceStatuses = ['INSERVICE', 'CANCELLED', 'DELETED', 'PROPOSED', 'SUSPENDED'];
+        var speeds = ['SPD1', 'SPD2', 'SPD3', 'SPD4'];
+
+        mc.setProperty('ServiceType', serviceTypes[Math.abs(parseInt(timestamp)) % serviceTypes.length] + '_' + shortTimestamp);
+        //mc.setProperty('ServiceStatus', serviceStatuses[Math.abs(parseInt(timestamp)) % serviceStatuses.length] + '_' + shortTimestamp);
+        //mc.setProperty('ServiceStatus', serviceStatuses[Math.abs(parseInt(timestamp)) % serviceStatuses.length]);
+        mc.setProperty('Speed', speeds[Math.abs(parseInt(timestamp)) % speeds.length] + '_' + shortTimestamp);
+
+        mc.setProperty('ServiceStatusDate', new Date().toISOString());]]></script>
+    <!-- 
+        
+    <filter xpath="get-property('CustomerId')=0 or get-property('CustomerId')='NULL'">
+        <then>
+            <property expression="get-property('CustomerID_Random')" name="CustomerId" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('CustomerId')" name="CustomerId" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="get-property('CustomerName')=0 or get-property('CustomerName')='NULL'">
+        <then>
+            <property expression="get-property('CustomerName_Random')" name="CustomerName" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('CustomerName')" name="CustomerName" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="get-property('PhoneId')=0 or get-property('PhoneId')='NULL' or get-property('PhoneId')=''">
+        <then>
+            <property expression="get-property('PhoneID_Main_Random')" name="PhoneID_Main" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('PhoneId')" name="PhoneID_Main" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="get-property('BillingAccountId')=0 or get-property('BillingAccountId')='NULL'">
+        <then>
+            <property expression="get-property('BillingAccountID_Random')" name="BillingAccountID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('BillingAccountId')" name="BillingAccountID" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="get-property('ServiceId')=0 or get-property('ServiceId')='NULL'">
+        <then>
+            <property expression="get-property('ServiceID_DSL_Random')" name="ServiceID_DSL" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('ServiceId')" name="ServiceID_DSL" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    
+     -->
+    <payloadFactory media-type="xml">
+        <format>
+            <GetAccountDetailsResponse xmlns="http://tempuri.org/">
+                <GetAccountDetailsResult>
+                    <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                        <NewDataSet xmlns="">
+                            <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                <CUSTOMERID>$1</CUSTOMERID>
+                                <CUSTOMER_TYPE>$2</CUSTOMER_TYPE>
+                                <CUSTOMERSUBTYPE>$3</CUSTOMERSUBTYPE>
+                                <CUSTOMER_NAME>$4</CUSTOMER_NAME>
+                                <ACCOUNT_ID>$5</ACCOUNT_ID>
+                                <CUSTOMERSTATUS>$6</CUSTOMERSTATUS>
+                                <CUSTOMERADDRESS>$7</CUSTOMERADDRESS>
+                                <MARKETSEGMENT>$8</MARKETSEGMENT>
+                                <BILLINGACCOUNTID>$9</BILLINGACCOUNTID>
+                                <BILLINGACCOUNTNAME>$10</BILLINGACCOUNTNAME>
+                            </Table>
+                            <Table1 diffgr:id="Table11" msdata:rowOrder="0">
+                                <SERV_ID>$11</SERV_ID>
+                                <PHONEID>$12</PHONEID>
+                                <SERVICETYPE>$13</SERVICETYPE>
+                                <SERVICESTATUS>$14</SERVICESTATUS>
+                                <SERVICEADDRESS>$15</SERVICEADDRESS>
+                                <SERVICESTATUSDATE>$16</SERVICESTATUSDATE>
+                                <SPEED>$17</SPEED>
+                            </Table1>
+                            <Table1 diffgr:id="Table12" msdata:rowOrder="1">
+                                <SERV_ID>$18</SERV_ID>
+                                <PHONEID>$19</PHONEID>
+                                <SERVICETYPE>$20</SERVICETYPE>
+                                <SERVICESTATUS>$21</SERVICESTATUS>
+                                <SERVICEADDRESS>$22</SERVICEADDRESS>
+                                <SERVICESTATUSDATE>$23</SERVICESTATUSDATE>
+                                <SPEED>$24</SPEED>
+                            </Table1>
+                        </NewDataSet>
+                    </diffgr:diffgram>
+                </GetAccountDetailsResult>
+            </GetAccountDetailsResponse>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('CustomerType')"/>
+            <arg evaluator="xml" expression="get-property('CustomerSubType')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('AccountID')"/>
+            <arg evaluator="xml" expression="get-property('CustomerStatus')"/>
+            <arg evaluator="xml" expression="get-property('CustomerAddress')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountName')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('ServiceType')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_CODE')"/>
+            <arg evaluator="xml" expression="get-property('ServiceAddress')"/>
+            <arg evaluator="xml" expression="get-property('ServiceStatusDate')"/>
+            <arg evaluator="xml" expression="get-property('Speed')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('BillingAccountId')"/>
+            <arg evaluator="xml" expression="get-property('ServiceType')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_CODE')"/>
+            <arg evaluator="xml" expression="get-property('ServiceAddress')"/>
+            <arg evaluator="xml" expression="get-property('ServiceStatusDate')"/>
+            <arg evaluator="xml" expression="get-property('Speed')"/>
+        </args>
+    </payloadFactory>
+</sequence>

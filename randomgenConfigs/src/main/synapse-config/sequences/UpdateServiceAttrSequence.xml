@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="UpdateServiceAttrSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="FORCE_POX_HTTP_RESPONSE" scope="axis2" type="STRING" value="false"/>
+    <property name="FORCE_SC_ACCEPTED" scope="axis2" type="STRING" value="false"/>
+    <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="SOAPVersion" scope="axis2" type="STRING" value="soap11"/>
+    <script language="js"><![CDATA[var timestamp = String(new Date().getTime());
+    var uuid = String(new java.util.UUID.randomUUID()).replace(/-/g, '').substring(0, 8);
+    var shortTimestamp = timestamp.substring(8);
+    
+    function getDefaultIfNull(value, prefix) {
+        if(value === null || value === undefined || value === "NULL" || value === "") {
+            return prefix + '_' + shortTimestamp + '_' + uuid.substring(0, 4);
+        }
+        return value;
+    }
+    
+    mc.setProperty('P_SERV_ID', getDefaultIfNull(mc.getProperty('P_SERV_ID'), 'SVC'));
+    mc.setProperty('P_REMARKS', getDefaultIfNull(mc.getProperty('P_REMARKS'), 'RMK'));
+    mc.setProperty('P_NO_OF_SPANS', getDefaultIfNull(mc.getProperty('P_NO_OF_SPANS'), 'SPAN'));
+    mc.setProperty('P_OVS_OUTDOOR_FIBR', getDefaultIfNull(mc.getProperty('P_OVS_OUTDOOR_FIBR'), 'OUT_FBR'));
+    mc.setProperty('P_OVS_LANCABLE', getDefaultIfNull(mc.getProperty('P_OVS_LANCABLE'), 'LAN'));
+    mc.setProperty('P_OVS_INDOOR_FIBR', getDefaultIfNull(mc.getProperty('P_OVS_INDOOR_FIBR'), 'IN_FBR'));
+    mc.setProperty('P_DEVICE_TYPE', getDefaultIfNull(mc.getProperty('P_DEVICE_TYPE'), 'DEV'));
+    mc.setProperty('P_MODEM_SERIAL_NUMBER', getDefaultIfNull(mc.getProperty('P_MODEM_SERIAL_NUMBER'), 'MSN'));
+    mc.setProperty('P_MODEM_TYPE', getDefaultIfNull(mc.getProperty('P_MODEM_TYPE'), 'MDM'));
+    mc.setProperty('P_MODEM_OWNERSHIP', getDefaultIfNull(mc.getProperty('P_MODEM_OWNERSHIP'), 'OWN'));
+    mc.setProperty('P_COMPLETION_DATE', getDefaultIfNull(mc.getProperty('P_COMPLETION_DATE'), new Date().toISOString()));
+    mc.setProperty('P_CPETYPE', getDefaultIfNull(mc.getProperty('P_CPETYPE'), 'CPE'));
+    mc.setProperty('P_WHOLE_HOME_WIFI', getDefaultIfNull(mc.getProperty('P_WHOLE_HOME_WIFI'), 'WIFI'));
+    mc.setProperty('P_WHOLE_HOME_WIFI2', getDefaultIfNull(mc.getProperty('P_WHOLE_HOME_WIFI2'), 'WIFI2'));
+    mc.setProperty('P_USERNAME', getDefaultIfNull(mc.getProperty('P_USERNAME'), 'USR'));
+    mc.setProperty('P_TOKEN', getDefaultIfNull(mc.getProperty('P_TOKEN'), 'TKN'));]]></script>
+    <payloadFactory media-type="xml">
+        <format>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <soap:Body>
+                    <UpdateServiceAttrResponse xmlns="http://tempuri.org/">
+                        <UpdateServiceAttrResult>
+                            <ServiceID>$1</ServiceID>
+                            <Status>SUCCESS</Status>
+                            <Message>Service attributes updated successfully</Message>
+                            <Details>
+                                <Remarks>$2</Remarks>
+                                <NoOfSpans>$3</NoOfSpans>
+                                <OutdoorFiber>$4</OutdoorFiber>
+                                <LANCable>$5</LANCable>
+                                <IndoorFiber>$6</IndoorFiber>
+                                <DeviceType>$7</DeviceType>
+                                <ModemSerialNumber>$8</ModemSerialNumber>
+                                <ModemType>$9</ModemType>
+                                <ModemOwnership>$10</ModemOwnership>
+                                <CompletionDate>$11</CompletionDate>
+                                <CPEType>$12</CPEType>
+                                <WholeHomeWiFi>$13</WholeHomeWiFi>
+                                <WholeHomeWiFi2>$14</WholeHomeWiFi2>
+                                <Username>$15</Username>
+                                <LastUpdateToken>$16</LastUpdateToken>
+                            </Details>
+                        </UpdateServiceAttrResult>
+                    </UpdateServiceAttrResponse>
+                </soap:Body>
+            </soap:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('P_SERV_ID')"/>
+            <arg evaluator="xml" expression="get-property('P_REMARKS')"/>
+            <arg evaluator="xml" expression="get-property('P_NO_OF_SPANS')"/>
+            <arg evaluator="xml" expression="get-property('P_OVS_OUTDOOR_FIBR')"/>
+            <arg evaluator="xml" expression="get-property('P_OVS_LANCABLE')"/>
+            <arg evaluator="xml" expression="get-property('P_OVS_INDOOR_FIBR')"/>
+            <arg evaluator="xml" expression="get-property('P_DEVICE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('P_MODEM_SERIAL_NUMBER')"/>
+            <arg evaluator="xml" expression="get-property('P_MODEM_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('P_MODEM_OWNERSHIP')"/>
+            <arg evaluator="xml" expression="get-property('P_COMPLETION_DATE')"/>
+            <arg evaluator="xml" expression="get-property('P_CPETYPE')"/>
+            <arg evaluator="xml" expression="get-property('P_WHOLE_HOME_WIFI')"/>
+            <arg evaluator="xml" expression="get-property('P_WHOLE_HOME_WIFI2')"/>
+            <arg evaluator="xml" expression="get-property('P_USERNAME')"/>
+            <arg evaluator="xml" expression="get-property('P_TOKEN')"/>
+        </args>
+    </payloadFactory>
+</sequence>

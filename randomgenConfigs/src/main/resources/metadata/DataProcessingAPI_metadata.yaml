@@ -1,0 +1,10 @@
+---
+key: "DataProcessingAPI-1.0.0"
+name : "DataProcessingAPI"
+displayName : "DataProcessingAPI"
+description: "Sample API"
+version: "1.0.0"
+serviceUrl: "https://{MI_HOST}:{MI_PORT}/process"
+definitionType: "OAS3"
+securityType: "BASIC"
+mutualSSLEnabled: false

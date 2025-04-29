@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GetServiceDetailsSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <property name="FORCE_POX_HTTP_RESPONSE" scope="axis2" type="STRING" value="false"/>
+    <property name="FORCE_SC_ACCEPTED" scope="axis2" type="STRING" value="false"/>
+    <property name="messageType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="ContentType" scope="axis2" type="STRING" value="text/xml"/>
+    <property name="SOAPVersion" scope="axis2" type="STRING" value="soap11"/>
+    <property expression="//*[local-name()='FT_Number']/text()" name="Input_FT_Number" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='SERVICE_ID']/text()" name="Input_SERVICE_ID" scope="default" type="STRING"/>
+    <property expression="//*[local-name()='TELEPHONE_NUMBER']/text()" name="Input_TELEPHONE_NUMBER" scope="default" type="STRING"/>
+    <script language="js"><![CDATA[var serviceId = mc.getProperty('Input_SERVICE_ID');
+mc.setProperty('DEBUG_SERVICE_ID', serviceId); // Debugging
+
+if (serviceId) {
+    var modValue = parseInt(serviceId) % 10;
+    mc.setProperty('DEBUG_MOD_VALUE', modValue); // Debugging
+
+    // Define the region mapping
+    var regionMapping = {
+        0: 'CSN',
+        1: 'MLT',
+        2: 'NPG',
+        3: 'MBT',
+        4: 'CLP',
+        5: 'PTS',
+        6: 'LCN',
+        7: 'BLR',
+        8: 'MNX',
+        9: 'GTS'
+    };
+
+    // Get the region based on the mod value
+    var regnCode = regionMapping[modValue];
+    mc.setProperty('REGN_CODE', regnCode);
+    mc.setProperty('DEBUG_REGN_CODE', regnCode); // Debugging
+
+    // Log the REGN_CODE to the server console
+    print('SERVICE_ID: ' + serviceId + ' MOD_VALUE: ' + modValue + ' REGN_CODE: ' + regnCode);
+} else {
+    mc.setProperty('REGN_CODE', 'UNKNOWN');
+    mc.setProperty('DEBUG_REGN_CODE', 'UNKNOWN'); // Debugging
+
+    // Log the REGN_CODE to the server console
+    print('SERVICE_ID: ' + serviceId + ' MOD_VALUE: ' + modValue + ' REGN_CODE: ' + regnCode);
+}
+
+// Rest of your script
+var timestamp = String(new Date().getTime());
+var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+}).replace(/-/g, '').substring(0, 8);
+var shortTimestamp = timestamp.substring(8);
+mc.setProperty('SERVICE_ID_Random', '0' + (Math.floor(Math.random() * 900000000 + 100000000)).toString() + '_DSL');
+
+mc.setProperty('FT_NUMBER', 'FT' + timestamp.substring(5) + uuid.substring(0, 4));
+mc.setProperty('CREATION_DATE', new Date().toISOString().split('T')[0]);
+mc.setProperty('TICKET_AGE', Math.abs(parseInt(timestamp)) % 10);
+mc.setProperty('PROM_REPORTEDBY', 'Agent_' + shortTimestamp);
+mc.setProperty('WORK_GROUP', 'Support_' + shortTimestamp);
+mc.setProperty('TOP_VIP', Math.abs(parseInt(timestamp)) % 2 ? 'Yes' : 'No');
+mc.setProperty('HOME_SERVICE_DEVICE', 'Device_' + shortTimestamp);
+mc.setProperty('FAULY_TYPE', 'FaultType_' + shortTimestamp);
+mc.setProperty('FAULT_DESC', 'Description_' + shortTimestamp);
+mc.setProperty('COMPLAINT_TYPE', 'ComplaintType_' + shortTimestamp);
+mc.setProperty('CIRT_TYPE', 'LEASED');
+mc.setProperty('FT_PRIORITY', 'Priority_' + shortTimestamp);
+mc.setProperty('FT_ENTITY', 'Entity_' + shortTimestamp);
+mc.setProperty('SLM_CATEGORY', 'Category_' + shortTimestamp);
+mc.setProperty('SLM_SUB_CAT', 'SubCategory_' + shortTimestamp);
+mc.setProperty('FT_REMARKS', 'Remarks_' + shortTimestamp);
+mc.setProperty('SERVICE_TYPE', 'ADSL');
+mc.setProperty('ACCOUNT_NO', '00' + shortTimestamp);
+mc.setProperty('CUSTOMER_NAME', 'Customer_' + shortTimestamp);
+mc.setProperty('ADDRESS_ID', shortTimestamp);
+mc.setProperty('STREET', shortTimestamp);
+mc.setProperty('STREET_NAME', 'Street_' + shortTimestamp);
+mc.setProperty('APART_NAME', 'Apart_' + shortTimestamp);
+mc.setProperty('RM_FLR_UNIT', 'Unit_' + shortTimestamp);
+mc.setProperty('BLDG_NAME', 'Building_' + shortTimestamp);
+mc.setProperty('BARANGAY', 'BGY SOUTH TRIANGLE');
+mc.setProperty('SUBD_VILLAGE', 'Village_' + shortTimestamp);
+mc.setProperty('CITY', 'QUEZON CITY');
+mc.setProperty('PROVINCE', 'GREATER METRO MANILA');
+mc.setProperty('CUST_LANDMARK', 'Landmark_' + shortTimestamp);
+mc.setProperty('ADDE_POSC_CODE', '3QNNFD' + shortTimestamp);
+mc.setProperty('LONGITUDE', '121.0' + (Math.abs(parseInt(timestamp)) % 999));
+mc.setProperty('LATTITUDE', '14.6' + (Math.abs(parseInt(timestamp)) % 999));
+mc.setProperty('PRIMARY_PHONE', '028' + shortTimestamp);
+mc.setProperty('SECONDARY_PHONE', '0917' + shortTimestamp);
+mc.setProperty('SPEED', '3 MBPS');
+mc.setProperty('PACKAGE_TYPE', 'DSL Basic');
+mc.setProperty('BZONE', 'SOUTH QUEZON CITY');
+mc.setProperty('EXCHANGE_NAME', 'QUEZON CITY EXCHANGE');
+mc.setProperty('CUSTOMER_TYPE', 'REG RESIDENTIAL');
+mc.setProperty('MARKET_SEGMENT', 'RBG');
+mc.setProperty('NE_TYPE', 'NGN');
+mc.setProperty('ADSL_SERVICE_ID', 'ADSL_' + shortTimestamp);
+mc.setProperty('ADSL_PACKAGE', 'DSL Basic 3MBPS');
+mc.setProperty('POTS_SERV_ID', 'POTS_' + shortTimestamp);
+mc.setProperty('PREQUAL', 'PRQ_' + shortTimestamp);
+mc.setProperty('NO_OF_SPAN', Math.abs(parseInt(timestamp)) % 5 + 1);
+mc.setProperty('BAWA', 'Region' + (Math.abs(parseInt(timestamp)) % 5 + 1));
+mc.setProperty('SAWA', 'QCY');
+mc.setProperty('MODEM_TYPE', 'ADSL2+ MODEM');
+mc.setProperty('MODEM_SERIAL', 'SER' + shortTimestamp);
+mc.setProperty('MODEM_OWNERSHIP', 'CUSTOMER-OWNED');
+mc.setProperty('MODEM_INSTALLATION_DATE', new Date().toISOString());
+mc.setProperty('IP_ADDRESS', '192.168.' + (Math.abs(parseInt(timestamp)) % 255) + '.' + (Math.abs(parseInt(timestamp)) % 255));
+mc.setProperty('OVS_COPPER', Math.abs(parseInt(timestamp)) % 2 ? 'YES' : 'NO');
+mc.setProperty('EMAIL', 'customer' + shortTimestamp + '@example.com');
+mc.setProperty('OVS_INFIBR', Math.abs(parseInt(timestamp)) % 2 ? 'YES' : 'NO');
+mc.setProperty('OVS_LANCABLE', Math.abs(parseInt(timestamp)) % 2 ? 'YES' : 'NO');
+mc.setProperty('OVS_OUTFBR', Math.abs(parseInt(timestamp)) % 2 ? 'YES' : 'NO');
+mc.setProperty('SMARTCARD_NO', 'SC' + shortTimestamp);
+mc.setProperty('STB_SERIAL_NO', 'STB' + shortTimestamp);
+mc.setProperty('NODE_LOCATION', 'NodeLoc_' + shortTimestamp);
+mc.setProperty('CABINET_LOCATION', 'CabLoc_' + shortTimestamp);
+mc.setProperty('ZIPCODE', '1103');
+mc.setProperty('ESA_TEAM', 'Team_' + shortTimestamp);
+mc.setProperty('IM_ASSIGNED', 'Tech_' + shortTimestamp);
+mc.setProperty('IM_CONTACT_NO', '0918' + shortTimestamp);
+mc.setProperty('APPOINTMENT_DATETIME', new Date(Date.now() + 86400000).toISOString());
+mc.setProperty('IM_CALLOUT_DATETIME', new Date().toISOString());
+mc.setProperty('NODE', 'QCYUTAG' + ('000' + (Math.abs(parseInt(timestamp)) % 999)).slice(-3));
+mc.setProperty('ODN', 'ODN' + shortTimestamp);
+mc.setProperty('INSTALLATION_DATE', new Date().toISOString());
+mc.setProperty('LOC_A_ADDRESS', 'EDSA RD BGY SOUTH TRIANGLE QUEZON CITY');
+mc.setProperty('LOC_B_ADDRESSS', 'EDSA RD BGY SOUTH TRIANGLE QUEZON CITY PHILIPPINES 3QNNFD' + shortTimestamp);
+mc.setProperty('IP_TV_SERV_ID', 'IPTV_' + shortTimestamp);
+mc.setProperty('IPTV_PACKAGE', 'Package_' + shortTimestamp);
+mc.setProperty('CONT_TYPE', 'PHONE');
+mc.setProperty('CONTACT_NUMBER_EMAIL', '-');
+mc.setProperty('CONTACT_NAME', '-');
+mc.setProperty('CONT_RELATIONSHIP', 'NA');]]></script>
+    <filter xpath="string-length(get-property('Input_SERVICE_ID'))=0 or get-property('Input_SERVICE_ID')='NULL'">
+        <then>
+            <property expression="get-property('SERVICE_ID_Random')" name="Final_SERVICE_ID" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('Input_SERVICE_ID')" name="Final_SERVICE_ID" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <filter xpath="string-length(get-property('Input_TELEPHONE_NUMBER'))=0 or get-property('Input_TELEPHONE_NUMBER')='NULL'">
+        <then>
+            <property expression="get-property('TELEPHONE_NUMBER_Random')" name="Final_TELEPHONE_NUMBER" scope="default" type="STRING"/>
+        </then>
+        <else>
+            <property expression="get-property('Input_TELEPHONE_NUMBER')" name="Final_TELEPHONE_NUMBER" scope="default" type="STRING"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="xml">
+        <format>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                <soap:Body>
+                    <GetServiceDetailsResponse xmlns="http://tempuri.org/">
+                        <GetServiceDetailsResult>
+                            <diffgr:diffgram xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+                                <NewDataSet xmlns="">
+                                    <Table diffgr:id="Table1" msdata:rowOrder="0">
+                                        <FT_NUMBER>$1</FT_NUMBER>
+                                        <CREATION_DATE>$2</CREATION_DATE>
+                                        <TICKET_AGE>$3</TICKET_AGE>
+                                        <PROM_REPORTEDBY>$4</PROM_REPORTEDBY>
+                                        <WORK_GROUP>$5</WORK_GROUP>
+                                        <TOP_VIP>$6</TOP_VIP>
+                                        <HOME_SERVICE_DEVICE>$7</HOME_SERVICE_DEVICE>
+                                        <REGN_CODE>$8</REGN_CODE>
+                                        <FAULY_TYPE>$9</FAULY_TYPE>
+                                        <FAULT_DESC>$10</FAULT_DESC>
+                                        <COMPLAINT_TYPE>$11</COMPLAINT_TYPE>
+                                        <SERVICE_ID>$12</SERVICE_ID>
+                                        <CIRT_TYPE>$13</CIRT_TYPE>
+                                        <FT_PRIORITY>$14</FT_PRIORITY>
+                                        <FT_ENTITY>$15</FT_ENTITY>
+                                        <SLM_CATEGORY>$16</SLM_CATEGORY>
+                                        <SLM_SUB_CAT>$17</SLM_SUB_CAT>
+                                        <FT_REMARKS>$18</FT_REMARKS>
+                                        <SERVICE_TYPE>$19</SERVICE_TYPE>
+                                        <ACCOUNT_NO>$20</ACCOUNT_NO>
+                                        <CUSTOMER_NAME>$21</CUSTOMER_NAME>
+                                        <ADDRESS_ID>$22</ADDRESS_ID>
+                                        <STREET>$23</STREET>
+                                        <STREET_NAME>$24</STREET_NAME>
+                                        <APART_NAME>$25</APART_NAME>
+                                        <RM_FLR_UNIT>$26</RM_FLR_UNIT>
+                                        <BLDG_NAME>$27</BLDG_NAME>
+                                        <BARANGAY>$28</BARANGAY>
+                                        <SUBD_VILLAGE>$29</SUBD_VILLAGE>
+                                        <CITY>$30</CITY>
+                                        <PROVINCE>$31</PROVINCE>
+                                        <CUST_LANDMARK>$32</CUST_LANDMARK>
+                                        <ADDE_POSC_CODE>$33</ADDE_POSC_CODE>
+                                        <LONGITUDE>$34</LONGITUDE>
+                                        <LATTITUDE>$35</LATTITUDE>
+                                        <PRIMARY_PHONE>$36</PRIMARY_PHONE>
+                                        <SECONDARY_PHONE>$37</SECONDARY_PHONE>
+                                        <SPEED>$38</SPEED>
+                                        <PACKAGE_TYPE>$39</PACKAGE_TYPE>
+                                        <BZONE>$40</BZONE>
+                                        <EXCHANGE_NAME>$41</EXCHANGE_NAME>
+                                        <CUSTOMER_TYPE>$42</CUSTOMER_TYPE>
+                                        <MARKET_SEGMENT>$43</MARKET_SEGMENT>
+                                        <NE_TYPE>$44</NE_TYPE>
+                                        <ADSL_SERVICE_ID>$45</ADSL_SERVICE_ID>
+                                        <ADSL_PACKAGE>$46</ADSL_PACKAGE>
+                                        <POTS_SERV_ID>$47</POTS_SERV_ID>
+                                        <TELEPHONE_NUMBER>$48</TELEPHONE_NUMBER>
+                                        <PREQUAL>$49</PREQUAL>
+                                        <NO_OF_SPAN>$50</NO_OF_SPAN>
+                                        <BAWA>$51</BAWA>
+                                        <SAWA>$52</SAWA>
+                                        <MODEM_TYPE>$53</MODEM_TYPE>
+                                        <MODEM_SERIAL>$54</MODEM_SERIAL>
+                                        <MODEM_OWNERSHIP>$55</MODEM_OWNERSHIP>
+                                        <MODEM_INSTALLATION_DATE>$56</MODEM_INSTALLATION_DATE>
+                                        <IP_ADDRESS>$57</IP_ADDRESS>
+                                        <OVS_COPPER>$58</OVS_COPPER>
+                                        <EMAIL>$59</EMAIL>
+                                        <OVS_INFIBR>$60</OVS_INFIBR>
+                                        <OVS_LANCABLE>$61</OVS_LANCABLE>
+                                        <OVS_OUTFBR>$62</OVS_OUTFBR>
+                                        <SMARTCARD_NO>$63</SMARTCARD_NO>
+                                        <STB_SERIAL_NO>$64</STB_SERIAL_NO>
+                                        <NODE_LOCATION>$65</NODE_LOCATION>
+                                        <CABINET_LOCATION>$66</CABINET_LOCATION>
+                                        <ZIPCODE>$67</ZIPCODE>
+                                        <ESA_TEAM>$68</ESA_TEAM>
+                                        <IM_ASSIGNED>$69</IM_ASSIGNED>
+                                        <IM_CONTACT_NO>$70</IM_CONTACT_NO>
+                                        <APPOINTMENT_DATETIME>$71</APPOINTMENT_DATETIME>
+                                        <IM_CALLOUT_DATETIME>$72</IM_CALLOUT_DATETIME>
+                                        <NODE>$73</NODE>
+                                        <ODN>$74</ODN>
+                                        <INSTALLATION_DATE>$75</INSTALLATION_DATE>
+                                        <LOC_A_ADDRESS>$76</LOC_A_ADDRESS>
+                                        <LOC_B_ADDRESSS>$77</LOC_B_ADDRESSS>
+                                    </Table>
+                                    <Table1 diffgr:id="Table11" msdata:rowOrder="0">
+                                        <IP_TV_SERV_ID>$78</IP_TV_SERV_ID>
+                                        <IPTV_PACKAGE>$79</IPTV_PACKAGE>
+                                    </Table1>
+                                    <Table2 diffgr:id="Table21" msdata:rowOrder="0">
+                                        <CONT_TYPE>$80</CONT_TYPE>
+                                        <CONTACT_NUMBER_EMAIL>$81</CONTACT_NUMBER_EMAIL>
+                                        <CONTACT_NAME>$82</CONTACT_NAME>
+                                        <CONT_RELATIONSHIP>$83</CONT_RELATIONSHIP>
+                                    </Table2>
+                                </NewDataSet>
+                            </diffgr:diffgram>
+                        </GetServiceDetailsResult>
+                    </GetServiceDetailsResponse>
+                </soap:Body>
+            </soap:Envelope>
+        </format>
+        <args>
+            <arg evaluator="xml" expression="get-property('FT_NUMBER')"/>
+            <arg evaluator="xml" expression="get-property('CREATION_DATE')"/>
+            <arg evaluator="xml" expression="get-property('TICKET_AGE')"/>
+            <arg evaluator="xml" expression="get-property('PROM_REPORTEDBY')"/>
+            <arg evaluator="xml" expression="get-property('WORK_GROUP')"/>
+            <arg evaluator="xml" expression="get-property('TOP_VIP')"/>
+            <arg evaluator="xml" expression="get-property('HOME_SERVICE_DEVICE')"/>
+            <arg evaluator="xml" expression="get-property('REGN_CODE')"/>
+            <arg evaluator="xml" expression="get-property('FAULY_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('FAULT_DESC')"/>
+            <arg evaluator="xml" expression="get-property('COMPLAINT_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('Final_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('CIRT_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('FT_PRIORITY')"/>
+            <arg evaluator="xml" expression="get-property('FT_ENTITY')"/>
+            <arg evaluator="xml" expression="get-property('SLM_CATEGORY')"/>
+            <arg evaluator="xml" expression="get-property('SLM_SUB_CAT')"/>
+            <arg evaluator="xml" expression="get-property('FT_REMARKS')"/>
+            <arg evaluator="xml" expression="get-property('SERVICE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('ACCOUNT_NO')"/>
+            <arg evaluator="xml" expression="get-property('CUSTOMER_NAME')"/>
+            <arg evaluator="xml" expression="get-property('ADDRESS_ID')"/>
+            <arg evaluator="xml" expression="get-property('STREET')"/>
+            <arg evaluator="xml" expression="get-property('STREET_NAME')"/>
+            <arg evaluator="xml" expression="get-property('APART_NAME')"/>
+            <arg evaluator="xml" expression="get-property('RM_FLR_UNIT')"/>
+            <arg evaluator="xml" expression="get-property('BLDG_NAME')"/>
+            <arg evaluator="xml" expression="get-property('BARANGAY')"/>
+            <arg evaluator="xml" expression="get-property('SUBD_VILLAGE')"/>
+            <arg evaluator="xml" expression="get-property('CITY')"/>
+            <arg evaluator="xml" expression="get-property('PROVINCE')"/>
+            <arg evaluator="xml" expression="get-property('CUST_LANDMARK')"/>
+            <arg evaluator="xml" expression="get-property('ADDE_POSC_CODE')"/>
+            <arg evaluator="xml" expression="get-property('LONGITUDE')"/>
+            <arg evaluator="xml" expression="get-property('LATTITUDE')"/>
+            <arg evaluator="xml" expression="get-property('PRIMARY_PHONE')"/>
+            <arg evaluator="xml" expression="get-property('SECONDARY_PHONE')"/>
+            <arg evaluator="xml" expression="get-property('SPEED')"/>
+            <arg evaluator="xml" expression="get-property('PACKAGE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('BZONE')"/>
+            <arg evaluator="xml" expression="get-property('EXCHANGE_NAME')"/>
+            <arg evaluator="xml" expression="get-property('CUSTOMER_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('MARKET_SEGMENT')"/>
+            <arg evaluator="xml" expression="get-property('NE_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('ADSL_SERVICE_ID')"/>
+            <arg evaluator="xml" expression="get-property('ADSL_PACKAGE')"/>
+            <arg evaluator="xml" expression="get-property('POTS_SERV_ID')"/>
+            <arg evaluator="xml" expression="get-property('Final_TELEPHONE_NUMBER')"/>
+            <arg evaluator="xml" expression="get-property('PREQUAL')"/>
+            <arg evaluator="xml" expression="get-property('NO_OF_SPAN')"/>
+            <arg evaluator="xml" expression="get-property('BAWA')"/>
+            <arg evaluator="xml" expression="get-property('SAWA')"/>
+            <arg evaluator="xml" expression="get-property('MODEM_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('MODEM_SERIAL')"/>
+            <arg evaluator="xml" expression="get-property('MODEM_OWNERSHIP')"/>
+            <arg evaluator="xml" expression="get-property('MODEM_INSTALLATION_DATE')"/>
+            <arg evaluator="xml" expression="get-property('IP_ADDRESS')"/>
+            <arg evaluator="xml" expression="get-property('OVS_COPPER')"/>
+            <arg evaluator="xml" expression="get-property('EMAIL')"/>
+            <arg evaluator="xml" expression="get-property('OVS_INFIBR')"/>
+            <arg evaluator="xml" expression="get-property('OVS_LANCABLE')"/>
+            <arg evaluator="xml" expression="get-property('OVS_OUTFBR')"/>
+            <arg evaluator="xml" expression="get-property('SMARTCARD_NO')"/>
+            <arg evaluator="xml" expression="get-property('STB_SERIAL_NO')"/>
+            <arg evaluator="xml" expression="get-property('NODE_LOCATION')"/>
+            <arg evaluator="xml" expression="get-property('CABINET_LOCATION')"/>
+            <arg evaluator="xml" expression="get-property('ZIPCODE')"/>
+            <arg evaluator="xml" expression="get-property('ESA_TEAM')"/>
+            <arg evaluator="xml" expression="get-property('IM_ASSIGNED')"/>
+            <arg evaluator="xml" expression="get-property('IM_CONTACT_NO')"/>
+            <arg evaluator="xml" expression="get-property('APPOINTMENT_DATETIME')"/>
+            <arg evaluator="xml" expression="get-property('IM_CALLOUT_DATETIME')"/>
+            <arg evaluator="xml" expression="get-property('NODE')"/>
+            <arg evaluator="xml" expression="get-property('ODN')"/>
+            <arg evaluator="xml" expression="get-property('INSTALLATION_DATE')"/>
+            <arg evaluator="xml" expression="get-property('LOC_A_ADDRESS')"/>
+            <arg evaluator="xml" expression="get-property('LOC_B_ADDRESSS')"/>
+            <arg evaluator="xml" expression="get-property('IP_TV_SERV_ID')"/>
+            <arg evaluator="xml" expression="get-property('IPTV_PACKAGE')"/>
+            <arg evaluator="xml" expression="get-property('CONT_TYPE')"/>
+            <arg evaluator="xml" expression="get-property('CONTACT_NUMBER_EMAIL')"/>
+            <arg evaluator="xml" expression="get-property('CONTACT_NAME')"/>
+            <arg evaluator="xml" expression="get-property('CONT_RELATIONSHIP')"/>
+        </args>
+    </payloadFactory>
+</sequence>
